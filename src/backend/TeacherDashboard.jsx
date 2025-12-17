@@ -33,7 +33,7 @@ const TeacherDashboard = () => {
         setError('');
 
         const res = await fetch(
-          'http://localhost:5000/api/admin/students-by-mentor',
+          'https://cmr-it.onrender.com/api/admin/students-by-mentor',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -119,7 +119,7 @@ const TeacherDashboard = () => {
       }));
 
       const res = await fetch(
-        'http://localhost:5000/api/teacher/mark-attendance',
+        'https://cmr-it.onrender.com/api/teacher/mark-attendance',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

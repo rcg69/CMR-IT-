@@ -1,4 +1,4 @@
-// src/backend/AdminDashboard.jsx (only the inner part changed)
+// src/backend/AdminDashboard.jsx
 import React, { useState } from 'react';
 import '../styles/StudentDashboard.css';
 
@@ -62,7 +62,7 @@ const AdminDashboard = () => {
                 />
                 <button
                   className="student-dashboard-primary-btn"
-                  onClick={() => uploadFile(studentFile, 'http://localhost:5000/api/admin/upload-students')}
+                  onClick={() => uploadFile(studentFile, 'https://cmr-it.onrender.com/api/admin/upload-students')}
                   disabled={loading}
                 >
                   {loading ? 'Uploading...' : 'Upload Students'}
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
                 />
                 <button
                   className="student-dashboard-primary-btn"
-                  onClick={() => uploadFile(teacherFile, 'http://localhost:5000/api/admin/upload-teachers')}
+                  onClick={() => uploadFile(teacherFile, 'https://cmr-it.onrender.com/api/admin/upload-teachers')}
                   disabled={loading}
                 >
                   {loading ? 'Uploading...' : 'Upload Teachers'}
@@ -98,10 +98,7 @@ const AdminDashboard = () => {
           </div>
 
           {status && (
-            <div
-              className="upload-status"
-              style={{ marginTop: '1rem' }}
-            >
+            <div className="upload-status" style={{ marginTop: '1rem' }}>
               {status}
             </div>
           )}
