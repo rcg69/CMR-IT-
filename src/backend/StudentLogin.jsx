@@ -47,7 +47,7 @@ const StudentLogin = () => {
     }
 
     try {
-      const res = await fetch('https://cmr-it.onrender.com/api/student/login', {
+      const res = await fetch('http://localhost:5000/api/student/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(login),
@@ -79,7 +79,7 @@ const StudentLogin = () => {
     setAdminError('');
 
     try {
-      const res = await fetch('https://cmr-it.onrender.com/api/admin/login', {
+      const res = await fetch('http://localhost:5000/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(adminLogin),
@@ -110,7 +110,7 @@ const StudentLogin = () => {
     setTeacherError('');
 
     try {
-      const res = await fetch('https://cmr-it.onrender.com/api/teacher/login', {
+      const res = await fetch('http://localhost:5000/api/teacher/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(teacherLogin),
