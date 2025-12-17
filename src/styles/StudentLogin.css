@@ -1,0 +1,208 @@
+/* src/styles/StudentLogin.css */
+
+.student-login-page {
+  min-height: 100vh;
+  /*background: radial-gradient(circle at top, #111425 0%, #02010a 40%, #000000 100%);*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+}
+
+.login-container {
+  max-width: 480px;
+  width: 100%;
+}
+
+/* Back button aligned with your dark UI */
+.back-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+  margin-bottom: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(-3px);
+  color: var(--text-primary);
+}
+
+/* Main card using app card styles */
+.login-card {
+  /*background: linear-gradient(145deg, var(--card-bg), #050213);*/
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2.25rem;
+  box-shadow: var(--shadow-soft);
+
+}
+
+/* Header adapted to your typography */
+.login-header h1 {
+  font-size: clamp(1.9rem, 3vw, 2.3rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.login-header p {
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0 0 2rem 0;
+  font-size: 0.95rem;
+}
+
+/* Form layout */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+/* Inputs styled for dark theme */
+.form-group input {
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  background: rgba(5, 8, 25, 0.9);
+  color: var(--text-primary);
+}
+
+.form-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: #050819;
+  box-shadow: 0 0 0 1px rgba(110, 76, 229, 0.65);
+}
+
+.input-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Error state */
+.error-message {
+  background: rgba(220, 38, 38, 0.12);
+  color: #fecaca;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  border-left: 3px solid #f87171;
+  font-size: 0.85rem;
+}
+
+/* Primary login button matching app accent */
+.login-btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+  color: #ffffff;
+  border: none;
+  padding: 0.95rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: 0.35rem;
+  width: 100%;
+}
+
+.login-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(130, 90, 255, 0.55);
+}
+
+.login-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Footer/help text */
+.login-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.login-footer p {
+  margin: 0 0 0.75rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.login-footer a {
+  color: var(--accent-soft);
+  text-decoration: none;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
+.forgot-password {
+  background: none;
+  border: none;
+  color: var(--accent-soft);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  transition: background 0.25s ease;
+}
+
+.forgot-password:hover {
+  background: rgba(129, 178, 241, 0.14);
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .student-login-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .login-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .login-header h1 {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .login-card {
+    padding: 1.75rem 1.25rem;
+  }
+}

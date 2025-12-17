@@ -1,0 +1,120 @@
+/* src/styles/RD.css */
+
+.rd-page {
+  background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+  color: #e5e7eb;
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+/* Generic reveal animation (same pattern as Approvals/Administration) */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.reveal.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero */
+.rd-hero {
+  padding: 120px 2rem 60px;
+  text-align: center;
+}
+
+.rd-hero-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.rd-hero h1 {
+  font-size: clamp(2.4rem, 5vw, 3.5rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.rd-hero p {
+  font-size: 1.05rem;
+  color: #cbd5f5;
+  line-height: 1.8;
+}
+
+/* Sections */
+.rd-section {
+  padding: 60px 2rem 20px;
+}
+
+.rd-section h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Cards grid */
+.rd-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.8rem;
+}
+
+.rd-grid.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.rd-card {
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: 18px;
+  padding: 1.8rem 1.6rem;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(14px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.rd-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 60px rgba(37, 99, 235, 0.45);
+  border-color: #3b82f6;
+}
+
+.rd-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.8rem;
+  color: #60a5fa;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.rd-card p {
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: #d1d5db;
+  margin-bottom: 0.8rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rd-hero {
+    padding: 100px 1.5rem 40px;
+  }
+
+  .rd-section {
+    padding: 40px 1.5rem 10px;
+  }
+}

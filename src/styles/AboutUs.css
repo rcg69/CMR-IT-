@@ -1,0 +1,291 @@
+/* Page wrapper */
+.about-page {
+  padding-top: 80px;
+  padding-bottom: 80px;
+  background: radial-gradient(circle at top, #020617 0, #020617 45%, #020617 100%);
+  color: #e5e7eb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Hero layout */
+.about-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr);
+  gap: 4rem;
+  align-items: center;
+  padding: 5rem 2rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-hero-text h1 {
+  font-size: clamp(2.2rem, 3vw, 2.8rem);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+.about-hero-sub {
+  color: #9ca3af;
+  line-height: 1.7;
+  max-width: 36rem;
+}
+
+/* Founder block */
+.about-hero-founder {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+.about-founder-photo {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.about-founder-meta {
+  padding: 0.75rem 0.25rem 0;
+}
+
+.about-founder-name {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.about-founder-role {
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+/* Cards grid */
+.about-content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2.2rem;
+  padding: 3rem 2rem 5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Card base */
+.about-card {
+  position: relative;
+  background: radial-gradient(circle at top left, #0f172a 0, #020617 55%);
+  border-radius: 18px;
+  padding: 2.1rem 2rem;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  overflow: hidden;
+}
+
+/* Glow overlay */
+.about-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(120deg, #38bdf8, #6366f1, #a855f7);
+  opacity: 0.22;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Inner content above overlay */
+.about-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.about-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.6rem;
+  color: #e5e7eb;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.about-card p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #cbd5f5;
+}
+
+/* Scroll reveal base state */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  filter: blur(4px);
+  transition:
+    opacity 0.7s ease-out,
+    transform 0.7s ease-out,
+    filter 0.7s ease-out;
+}
+
+/* Visible state when in viewport */
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* Stagger for cards */
+.about-card:nth-child(1).reveal-visible {
+  transition-delay: 0.05s;
+}
+.about-card:nth-child(2).reveal-visible {
+  transition-delay: 0.15s;
+}
+.about-card:nth-child(3).reveal-visible {
+  transition-delay: 0.25s;
+}
+.about-card:nth-child(4).reveal-visible {
+  transition-delay: 0.35s;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .about-hero {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding-inline: 1.5rem;
+  }
+
+  .about-founder-photo {
+    height: 260px;
+  }
+
+  .about-content-grid {
+    padding-inline: 1.5rem;
+  }
+}
+/* ========================================
+   UNIVERSAL RESPONSIVE BASE - PASTE THIS FIRST
+   ======================================== */
+
+/* Reset & Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Universal Responsive Typography */
+h1 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; margin: 0 0 1rem 0; }
+h2 { font-size: clamp(1.75rem, 4vw, 2.75rem); line-height: 1.2; margin: 0 0 0.75rem 0; }
+h3 { font-size: clamp(1.25rem, 3vw, 1.875rem); line-height: 1.3; margin: 0 0 0.5rem 0; }
+h4 { font-size: clamp(1.125rem, 2.5vw, 1.5rem); line-height: 1.4; margin: 0 0 0.5rem 0; }
+p { margin: 0 0 1rem 0; }
+
+/* Universal Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Responsive Padding */
+@media (max-width: 1200px) { .container { padding: 0 1.25rem; } }
+@media (max-width: 768px)  { .container { padding: 0 1rem; } }
+@media (max-width: 480px)  { .container { padding: 0 0.75rem; } }
+
+/* Universal Flex/Grid Helpers */
+.flex { display: flex; gap: 1rem; }
+.flex-col { flex-direction: column; }
+.grid { display: grid; gap: 1.5rem; }
+.grid-cols-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+/* Responsive Images */
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Buttons - Universal */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+.btn:hover { transform: translateY(-1px); }
+
+/* Responsive Text */
+.text-sm   { font-size: clamp(0.75rem, 2vw, 0.875rem); }
+.text-base  { font-size: clamp(0.875rem, 2.5vw, 1rem); }
+.text-lg    { font-size: clamp(1rem, 3vw, 1.125rem); }
+.text-xl    { font-size: clamp(1.125rem, 3.5vw, 1.25rem); }
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS - UNIVERSAL
+   ======================================== */
+
+/* Large Desktop */
+@media (min-width: 1200px) { 
+  body { font-size: 17px; } 
+}
+
+/* Desktop */
+@media (max-width: 1199px) and (min-width: 992px) { }
+
+/* Tablet */
+@media (max-width: 991px) and (min-width: 768px) { 
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+}
+
+/* Mobile Large */
+@media (max-width: 767px) and (min-width: 481px) { 
+  .flex { flex-direction: column; }
+  .grid-cols-2 { grid-template-columns: 1fr; }
+}
+
+/* Mobile Small */
+@media (max-width: 480px) { 
+  body { font-size: 15px; padding: 0 0.5rem; }
+  .hero-title { font-size: 2rem !important; }
+  .btn { padding: 0.625rem 1.25rem; }
+}
+
+/* Tiny Screens */
+@media (max-width: 360px) { 
+  body { font-size: 14px; }
+  .container { padding: 0 0.5rem; }
+}
+
+/* Landscape Mobile Fix */
+@media (max-height: 500px) and (orientation: landscape) {
+  body { font-size: 14px; }
+  h1 { font-size: 1.75rem; }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  img { image-rendering: -webkit-optimize-contrast; }
+}

@@ -1,0 +1,184 @@
+.admissions-page {
+  padding: 40px 20px 60px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.admissions-page h1 {
+  margin-bottom: 10px;
+}
+
+.admissions-page p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.admissions-form {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(129, 178, 241, 0.2);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.field input,
+.field textarea {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #1f2937;
+  background: #050819;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+}
+
+.admissions-submit-btn {
+  margin-top: 8px;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 10px 22px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 16px 40px rgba(110, 76, 229, 0.7);
+}
+/* ========================================
+   UNIVERSAL RESPONSIVE BASE - PASTE THIS FIRST
+   ======================================== */
+
+/* Reset & Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Universal Responsive Typography */
+h1 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; margin: 0 0 1rem 0; }
+h2 { font-size: clamp(1.75rem, 4vw, 2.75rem); line-height: 1.2; margin: 0 0 0.75rem 0; }
+h3 { font-size: clamp(1.25rem, 3vw, 1.875rem); line-height: 1.3; margin: 0 0 0.5rem 0; }
+h4 { font-size: clamp(1.125rem, 2.5vw, 1.5rem); line-height: 1.4; margin: 0 0 0.5rem 0; }
+p { margin: 0 0 1rem 0; }
+
+/* Universal Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Responsive Padding */
+@media (max-width: 1200px) { .container { padding: 0 1.25rem; } }
+@media (max-width: 768px)  { .container { padding: 0 1rem; } }
+@media (max-width: 480px)  { .container { padding: 0 0.75rem; } }
+
+/* Universal Flex/Grid Helpers */
+.flex { display: flex; gap: 1rem; }
+.flex-col { flex-direction: column; }
+.grid { display: grid; gap: 1.5rem; }
+.grid-cols-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+/* Responsive Images */
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Buttons - Universal */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+.btn:hover { transform: translateY(-1px); }
+
+/* Responsive Text */
+.text-sm   { font-size: clamp(0.75rem, 2vw, 0.875rem); }
+.text-base  { font-size: clamp(0.875rem, 2.5vw, 1rem); }
+.text-lg    { font-size: clamp(1rem, 3vw, 1.125rem); }
+.text-xl    { font-size: clamp(1.125rem, 3.5vw, 1.25rem); }
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS - UNIVERSAL
+   ======================================== */
+
+/* Large Desktop */
+@media (min-width: 1200px) { 
+  body { font-size: 17px; } 
+}
+
+/* Desktop */
+@media (max-width: 1199px) and (min-width: 992px) { }
+
+/* Tablet */
+@media (max-width: 991px) and (min-width: 768px) { 
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+}
+
+/* Mobile Large */
+@media (max-width: 767px) and (min-width: 481px) { 
+  .flex { flex-direction: column; }
+  .grid-cols-2 { grid-template-columns: 1fr; }
+}
+
+/* Mobile Small */
+@media (max-width: 480px) { 
+  body { font-size: 15px; padding: 0 0.5rem; }
+  .hero-title { font-size: 2rem !important; }
+  .btn { padding: 0.625rem 1.25rem; }
+}
+
+/* Tiny Screens */
+@media (max-width: 360px) { 
+  body { font-size: 14px; }
+  .container { padding: 0 0.5rem; }
+}
+
+/* Landscape Mobile Fix */
+@media (max-height: 500px) and (orientation: landscape) {
+  body { font-size: 14px; }
+  h1 { font-size: 1.75rem; }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  img { image-rendering: -webkit-optimize-contrast; }
+}
