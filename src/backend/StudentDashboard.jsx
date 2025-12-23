@@ -9,7 +9,7 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
   const student = location.state?.student;
 
-  // Attendance summary state
+  // same state as before...
   const [attendance, setAttendance] = useState({
     totalClasses: 0,
     present: 0,
@@ -19,17 +19,14 @@ const StudentDashboard = () => {
   const [attLoading, setAttLoading] = useState(true);
   const [attError, setAttError] = useState('');
 
-  // Attendance records state
   const [records, setRecords] = useState([]);
   const [recLoading, setRecLoading] = useState(true);
   const [recError, setRecError] = useState('');
 
-  // Calendar state
   const [viewYear, setViewYear] = useState(new Date().getFullYear());
   const [viewMonth, setViewMonth] = useState(new Date().getMonth());
   const [selectedDate, setSelectedDate] = useState(null);
 
-  // Profile state
   const [profile, setProfile] = useState({
     phone: '',
     branch: '',
@@ -51,7 +48,7 @@ const StudentDashboard = () => {
   const [imagePreviewUrl, setImagePreviewUrl] = useState('');
   const [showProfileInfo, setShowProfileInfo] = useState(false);
 
-  // SUMMARY - Fetch attendance summary
+  // fetch attendance summary
   useEffect(() => {
     const fetchAttendance = async () => {
       if (!student?.email) {
@@ -67,7 +64,9 @@ const StudentDashboard = () => {
           )}`
         );
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to load attendance');
+        if (!res.ok)
+          throw new Error(data.message || 'Failed to load attendance');
+
         setAttendance({
           totalClasses: data.totalClasses || 0,
           present: data.present || 0,
@@ -84,7 +83,7 @@ const StudentDashboard = () => {
     fetchAttendance();
   }, [student?.email]);
 
-  // RECORDS - Fetch attendance records
+  // fetch attendance records
   useEffect(() => {
     const fetchRecords = async () => {
       if (!student?.email) {
@@ -100,7 +99,9 @@ const StudentDashboard = () => {
           )}`
         );
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to load attendance records');
+        if (!res.ok)
+          throw new Error(data.message || 'Failed to load attendance records');
+
         setRecords(Array.isArray(data.records) ? data.records : []);
       } catch (err) {
         console.error('Attendance records error:', err);
@@ -112,7 +113,7 @@ const StudentDashboard = () => {
     fetchRecords();
   }, [student?.email]);
 
-  // PROFILE FETCH
+  // profile fetch
   useEffect(() => {
     const fetchProfile = async () => {
       if (!student?.email) {
@@ -124,14 +125,18 @@ const StudentDashboard = () => {
         setProfileError('');
         setProfileMessage('');
         const res = await fetch(
-          `${API_BASE}/api/student/profile?email=${encodeURIComponent(student.email)}`
+          `${API_BASE}/api/student/profile?email=${encodeURIComponent(
+            student.email
+          )}`
         );
         if (res.status === 404) {
           setProfileLoading(false);
           return;
         }
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to load profile');
+        if (!res.ok)
+          throw new Error(data.message || 'Failed to load profile');
+
         const p = data.profile || {};
         setProfile({
           phone: p.phone || '',
@@ -186,9 +191,14 @@ const StudentDashboard = () => {
         body: formData,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to upload image');
+      if (!res.ok)
+        throw new Error(data.message || 'Failed to upload image');
+
       const fullUrl = `${API_BASE}${data.profileImageUrl}`;
-      setProfile((prev) => ({ ...prev, profileImageUrl: data.profileImageUrl }));
+      setProfile((prev) => ({
+        ...prev,
+        profileImageUrl: data.profileImageUrl,
+      }));
       setImagePreviewUrl(fullUrl);
       setProfileMessage('Image uploaded successfully!');
     } catch (err) {
@@ -226,7 +236,9 @@ const StudentDashboard = () => {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to save profile');
+      if (!res.ok)
+        throw new Error(data.message || 'Failed to save profile');
+
       setProfileMessage('Profile saved successfully!');
     } catch (err) {
       setProfileError(err.message || 'Could not save profile');
@@ -235,11 +247,19 @@ const StudentDashboard = () => {
     }
   };
 
-  // calendar helpers etc. — keep your existing logic unchanged
+  // calendar helpers etc. keep as in your existing file (dayStatusMap, calendarDays, JSX)
+
+  if (!student) {
+    return (
+      <div className="student-dashboard-page">
+        {/* session expired UI as in your original */}
+      </div>
+    );
+  }
 
   return (
     <div className="student-dashboard-page">
-      {/* ... your existing JSX unchanged ... */}
+      {/* keep your full existing dashboard JSX here (header, profile card, calendar, etc.) */}
     </div>
   );
 };
