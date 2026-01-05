@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'; // ✅ useLocation
 
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
@@ -23,16 +23,38 @@ import Admissions from './backend/admissions';
 import StudentLogin from './backend/StudentLogin';
 import StudentDashboard from './backend/StudentDashboard';
 import AdminDashboard from './backend/AdminDashboard';
-import TeacherDashboard from './backend/TeacherDashboard'; // NEW
+import TeacherDashboard from './backend/TeacherDashboard';
+
+import ChatBot from './backend/ChatBot';
+import ChatButton from './backend/ChatButton';
 
 import './styles/global.css';
 import './styles/layout.css';
+
+const FloatingChatButton = () => {
+  const location = useLocation();
+
+  const allowedRoutes = new Set([
+    '/student-dashboard',
+    '/teacher-dashboard',
+    '/admin-dashboard',
+  ]);
+
+  if (!allowedRoutes.has(location.pathname)) return null;
+
+  return (
+    <div style={{ position: 'fixed', right: 22, bottom: 22, zIndex: 2147483647 }}>
+      <ChatButton />
+    </div>
+  );
+};
 
 const App = () => {
   return (
     <div className="app-root">
       <BrowserRouter>
         <NavBar />
+
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -44,11 +66,12 @@ const App = () => {
             <Route path="/rd" element={<RD />} />
             <Route path="/student" element={<Student />} />
 
-            {/* Auth-related routes */}
             <Route path="/student-login" element={<StudentLogin />} />
             <Route path="/student-dashboard" element={<StudentDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
+
+            <Route path="/student/chat" element={<ChatBot />} />
 
             <Route path="/alumni" element={<Alumni />} />
             <Route path="/achievements" element={<Achievements />} />
@@ -58,7 +81,11 @@ const App = () => {
             <Route path="/admissions" element={<Admissions />} />
           </Routes>
         </main>
+
         <Footer />
+
+        {/* ✅ Only shows on student/teacher/admin dashboards */}
+        <FloatingChatButton />
       </BrowserRouter>
     </div>
   );

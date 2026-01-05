@@ -1,0 +1,318 @@
+/* =========================
+   IRAH / CMRIT Chat Theme
+   ========================= */
+:root{
+  /* Base */
+  --irah-bg0: #05060a;
+  --irah-bg1: #070a12;
+
+  /* Surfaces (glass) */
+  --irah-surface: rgba(15, 23, 42, .58);
+  --irah-surface2: rgba(2, 6, 23, .62);
+  --irah-border: rgba(148, 163, 184, .18);
+
+  /* Text */
+  --irah-text: #e5e7eb;
+  --irah-muted: rgba(226, 232, 240, .70);
+
+  /* Accents */
+  --irah-accent: #38bdf8;   /* cyan */
+  --irah-accent2: #7c3aed;  /* purple */
+
+  /* Effects */
+  --irah-radius: 18px;
+  --irah-shadow: 0 18px 55px rgba(0,0,0,.45);
+  --irah-blur: blur(12px);
+}
+
+*{ box-sizing: border-box; }
+
+/* =========================
+   Fullscreen Shell
+   ========================= */
+.irahChat{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 900; /* keep sane; adjust if your portal needs higher */
+
+  color: var(--irah-text);
+  font-family: inherit;
+
+  background:
+    radial-gradient(1200px 650px at 18% 0%, rgba(56,189,248,.10), transparent 60%),
+    radial-gradient(1000px 580px at 90% 15%, rgba(124,58,237,.10), transparent 62%),
+    linear-gradient(180deg, var(--irah-bg0), var(--irah-bg1));
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   Topbar
+   ========================= */
+.irahChat__topbar{
+  height: 64px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: var(--irah-surface2);
+  border-bottom: 1px solid var(--irah-border);
+  backdrop-filter: var(--irah-blur);
+}
+
+.irahChat__title{
+  flex: 1;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.irahChat__titleMain{
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  color: var(--irah-text);
+}
+
+.irahChat__titleSub{
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--irah-muted);
+}
+
+/* Buttons */
+.irahChat__btn{
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(148,163,184,.22);
+  background: rgba(15,23,42,.55);
+  color: var(--irah-text);
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.irahChat__btn--ghost{
+  padding: 0 14px;
+  font-weight: 600;
+}
+
+.irahChat__btn--icon{
+  width: 44px;
+  padding: 0;
+  font-size: 18px;
+}
+
+.irahChat__btn:hover{
+  border-color: rgba(56,189,248,.60);
+  background: rgba(15,23,42,.78);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.35);
+}
+
+/* =========================
+   Body Layout
+   ========================= */
+.irahChat__body{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.irahChat__scroll{
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 12px 24px;
+}
+
+/* Centered conversation column */
+.irahChat__thread{
+  width: min(980px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Row */
+.irahChat__row{
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.irahChat__row--user{
+  justify-content: flex-end;
+}
+
+/* Avatar (force small, prevent global img styles) */
+.irahChat__avatar{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+
+  border: 1px solid rgba(148,163,184,.18);
+  background: rgba(15,23,42,.55);
+  box-shadow: 0 8px 18px rgba(0,0,0,.25);
+
+  outline: 2px solid rgba(56,189,248,.16);
+  outline-offset: 2px;
+
+  flex: 0 0 auto;
+}
+
+/* Bubble base */
+.irahChat__bubble{
+  max-width: min(720px, 92%);
+  padding: 12px 14px;
+  border-radius: 16px;
+  line-height: 1.55;
+  font-size: 14px;
+
+  white-space: pre-wrap;
+  word-break: break-word;
+  box-shadow: 0 14px 32px rgba(0,0,0,.12);
+}
+
+/* Bot bubble */
+.irahChat__bubble--bot{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  color: var(--irah-text);
+  border-bottom-left-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+/* User bubble */
+.irahChat__bubble--user{
+  background: linear-gradient(135deg,
+    rgba(56,189,248,.22),
+    rgba(124,58,237,.18)
+  );
+  border: 1px solid rgba(56,189,248,.28);
+  color: var(--irah-text);
+  border-bottom-right-radius: 10px;
+}
+
+/* Typing dots */
+.irahChat__dots{
+  letter-spacing: 2px;
+  opacity: .85;
+}
+
+/* =========================
+   Composer
+   ========================= */
+.irahChat__composer{
+  border-top: 1px solid var(--irah-border);
+  background: var(--irah-surface2);
+  backdrop-filter: var(--irah-blur);
+
+  padding: 14px 12px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.irahChat__input{
+  width: min(860px, 100%);
+  height: 50px;
+
+  border-radius: 18px;
+  border: 1px solid rgba(148,163,184,.20);
+  background: rgba(15,23,42,.72);
+  color: var(--irah-text);
+
+  padding: 0 16px;
+  outline: none;
+
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.irahChat__input::placeholder{
+  color: rgba(226,232,240,.55);
+}
+
+.irahChat__input:focus{
+  border-color: rgba(56,189,248,.65);
+  box-shadow: 0 0 0 4px rgba(56,189,248,.12);
+  background: rgba(15,23,42,.82);
+}
+
+.irahChat__send{
+  height: 50px;
+  padding: 0 18px;
+  border-radius: 18px;
+
+  border: 1px solid rgba(56,189,248,.30);
+  background: linear-gradient(135deg, rgba(56,189,248,.22), rgba(124,58,237,.18));
+  color: var(--irah-text);
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, filter .15s ease, opacity .15s ease;
+}
+
+.irahChat__send:hover{
+  transform: translateY(-1px);
+  border-color: rgba(56,189,248,.55);
+  filter: brightness(1.04);
+}
+
+.irahChat__send:disabled{
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile */
+@media (max-width: 640px){
+  .irahChat__title{ text-align: left; }
+  .irahChat__thread{ width: 100%; }
+  .irahChat__bubble{ max-width: 96%; }
+  .irahChat__avatar{ width: 30px; height: 30px; border-radius: 10px; }
+}
+/* --- Readability boost --- */
+.irahChat{
+  font-size: 16px;            /* base size for the whole chat */
+}
+
+.irahChat__bubble{
+  font-size: 16px;            /* was 14px */
+  padding: 14px 16px;         /* a bit more comfortable */
+}
+
+.irahChat__titleMain{
+  font-size: 18px;            /* was 16px */
+}
+
+.irahChat__titleSub{
+  font-size: 13px;            /* was 12px */
+}
+
+/* Bigger avatar */
+.irahChat__avatar{
+  width: 44px;                /* was 34px */
+  height: 44px;               /* was 34px */
+  border-radius: 14px;        /* keep shape nice */
+}
+
+/* Slightly bigger buttons + input */
+.irahChat__btn{
+  height: 42px;               /* was 38px */
+  font-size: 15px;
+}
+
+.irahChat__input{
+  height: 56px;               /* was 50px */
+  font-size: 16px;
+}
+
+.irahChat__send{
+  height: 56px;               /* was 50px */
+  font-size: 16px;
+}

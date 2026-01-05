@@ -1,13 +1,23 @@
 // src/backend/AdminDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import '../styles/StudentDashboard.css';
+// Universal API_BASE - Dev + Prod
+const getApiBase = () => {
+  if (import.meta.env.DEV) {
+    return 'http://localhost:5000'; // Backend dev port
+  }
+  return 'https://irah.onrender.com'; // Production
+};
 
-const API_BASE = 'https://irah.onrender.com';
+const API_BASE = getApiBase();
+
 
 const AdminDashboard = () => {
   const [studentFile, setStudentFile] = useState(null);
   const [teacherFile, setTeacherFile] = useState(null);
+  const [chatFile, setChatFile] = useState(null); // NEW: Chat data
   const [status, setStatus] = useState('');
+  const [chatStatus, setChatStatus] = useState(''); // NEW: Chat status
   const [loading, setLoading] = useState(false);
 
   const [students, setStudents] = useState([]);
@@ -46,6 +56,33 @@ const AdminDashboard = () => {
     }
   };
 
+  // NEW: Upload Chat Data
+  const uploadChatData = async () => {
+    if (!chatFile) {
+      setChatStatus('Please select a CSV file first.');
+      return;
+    }
+    setLoading(true);
+    setChatStatus('');
+    try {
+      const formData = new FormData();
+      formData.append('file', chatFile);
+      const res = await fetch(`${API_BASE}/api/admin/upload-chat-data`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Upload failed');
+      }
+      setChatStatus(`${data.message} (added: ${data.insertedCount})`);
+    } catch (err) {
+      setChatStatus(err.message || 'Something went wrong during chat data upload.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchUsers = async () => {
     try {
       setListLoading(true);
@@ -75,7 +112,7 @@ const AdminDashboard = () => {
           <div className="student-dashboard-header">
             <div className="student-dashboard-title-block">
               <h1>IRAH Admin Dashboard</h1>
-              <p>Manage students, teachers &amp; mentor mapping.</p>
+              <p>Manage students, teachers, chat data & mentor mapping.</p>
             </div>
           </div>
 
@@ -149,18 +186,76 @@ const AdminDashboard = () => {
                 </p>
               </div>
             </div>
+
+            {/* NEW: Upload Chat Data */}
+            <div className="student-info-card">
+              <div className="student-info-label">📚 Upload Chat Data</div>
+              <div className="student-info-value">
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={(e) => setChatFile(e.target.files[0] || null)}
+                  disabled={loading}
+                  style={{ marginBottom: '0.75rem' }}
+                />
+                <button
+                  className="student-dashboard-primary-btn"
+                  onClick={uploadChatData}
+                  disabled={loading || !chatFile}
+                >
+                  {loading ? 'Uploading...' : 'Upload Chat Data'}
+                </button>
+                <p
+                  style={{
+                    fontSize: '0.8rem',
+                    marginTop: '0.5rem',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  CSV: question, answer, keywords, category
+                </p>
+                <p style={{ fontSize: '0.7rem', color: '#10b981', marginTop: '0.25rem' }}>
+                  Powers student chatbot! 🚀
+                </p>
+              </div>
+            </div>
           </div>
 
           {status && (
             <div
               className="upload-status"
-              style={{ marginTop: '1rem', color: '#e5e7eb', fontSize: '0.9rem' }}
+              style={{ 
+                marginTop: '1rem', 
+                color: '#10b981', 
+                fontSize: '0.9rem',
+                background: 'rgba(16, 185, 129, 0.1)',
+                padding: '0.75rem',
+                borderRadius: '8px',
+                borderLeft: '4px solid #10b981'
+              }}
             >
-              {status}
+              ✅ {status}
             </div>
           )}
 
-          {/* Users list */}
+          {chatStatus && (
+            <div
+              className="upload-status"
+              style={{ 
+                marginTop: '0.5rem', 
+                color: '#3b82f6', 
+                fontSize: '0.9rem',
+                background: 'rgba(59, 130, 246, 0.1)',
+                padding: '0.75rem',
+                borderRadius: '8px',
+                borderLeft: '4px solid #3b82f6'
+              }}
+            >
+              💬 {chatStatus}
+            </div>
+          )}
+
+          {/* Users list - UNCHANGED */}
           <div style={{ marginTop: '2rem' }}>
             <h2
               style={{

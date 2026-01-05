@@ -3,7 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/StudentDashboard.css';
 
-const API_BASE = 'https://irah.onrender.com';
+// Universal API_BASE - Dev + Prod
+const getApiBase = () => {
+  if (import.meta.env.DEV) {
+    return 'http://localhost:5000'; // Backend dev port
+  }
+  return 'https://irah.onrender.com'; // Production
+};
+
+const API_BASE = getApiBase();
 
 const TeacherDashboard = () => {
   const location = useLocation();

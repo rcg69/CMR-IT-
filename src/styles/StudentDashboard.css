@@ -373,3 +373,10 @@
   font-size: 0.8rem;
   color: #f97316;
 }
+/* ChatButton.css or global CSS */
+.chat-button {
+  position: fixed;
+  bottom: 20px;
+  right: 24px;
+  z-index: 9999;
+}

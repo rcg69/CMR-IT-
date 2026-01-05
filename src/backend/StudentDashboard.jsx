@@ -2,8 +2,18 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/StudentDashboard.css';
+import ChatButton from '../backend/ChatButton';
+import ChatBot from './ChatBot';
 
-const API_BASE = 'https://irah.onrender.com';
+// Universal API_BASE - Dev + Prod
+const getApiBase = () => {
+  if (import.meta.env.DEV) {
+    return 'http://localhost:5000'; // Backend dev port
+  }
+  return 'https://irah.onrender.com'; // Production
+};
+
+const API_BASE = getApiBase();
 
 const StudentDashboard = () => {
   const location = useLocation();
@@ -50,8 +60,12 @@ const StudentDashboard = () => {
   const [profileMessage, setProfileMessage] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState('');
-  // NEW: Toggle for showing/hiding profile section
+
+  // Toggle for showing/hiding profile section
   const [showProfileInfo, setShowProfileInfo] = useState(false);
+
+  // Chat
+  const [showChat, setShowChat] = useState(false);
 
   // SUMMARY - Fetch attendance summary
   useEffect(() => {
@@ -69,8 +83,7 @@ const StudentDashboard = () => {
           )}`
         );
         const data = await res.json();
-        if (!res.ok)
-          throw new Error(data.message || 'Failed to load attendance');
+        if (!res.ok) throw new Error(data.message || 'Failed to load attendance');
 
         setAttendance({
           totalClasses: data.totalClasses || 0,
@@ -139,8 +152,7 @@ const StudentDashboard = () => {
           return;
         }
         const data = await res.json();
-        if (!res.ok)
-          throw new Error(data.message || 'Failed to load profile');
+        if (!res.ok) throw new Error(data.message || 'Failed to load profile');
 
         const p = data.profile;
         setProfile({
@@ -197,8 +209,7 @@ const StudentDashboard = () => {
         body: formData,
       });
       const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.message || 'Failed to upload image');
+      if (!res.ok) throw new Error(data.message || 'Failed to upload image');
 
       const fullUrl = `${API_BASE}${data.profileImageUrl}`;
       setProfile((prev) => ({
@@ -242,8 +253,7 @@ const StudentDashboard = () => {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.message || 'Failed to save profile');
+      if (!res.ok) throw new Error(data.message || 'Failed to save profile');
 
       setProfileMessage('Profile saved successfully!');
     } catch (err) {
@@ -657,9 +667,7 @@ const StudentDashboard = () => {
                   </div>
 
                   {profileError && (
-                    <div className="student-profile-error">
-                      {profileError}
-                    </div>
+                    <div className="student-profile-error">{profileError}</div>
                   )}
                   {profileMessage && (
                     <div className="student-profile-success">
@@ -861,9 +869,7 @@ const StudentDashboard = () => {
                     >
                       {Object.keys(info.status.slots).length === 0
                         ? 'Slots: 0'
-                        : `Slots: ${
-                            Object.keys(info.status.slots).length
-                          }`}
+                        : `Slots: ${Object.keys(info.status.slots).length}`}
                     </div>
                   </button>
                 );
@@ -942,9 +948,7 @@ const StudentDashboard = () => {
                             color: 'var(--text-muted)',
                           }}
                         >
-                          {subject
-                            ? `Subject: ${subject}`
-                            : 'Subject -'}
+                          {subject ? `Subject: ${subject}` : 'Subject -'}
                         </div>
                       </div>
                       <div>
@@ -969,7 +973,7 @@ const StudentDashboard = () => {
             </div>
           )}
 
-          {/* Actions */}
+          {/* Actions (kept as-is, currently empty in your code) */}
           <div
             style={{
               marginTop: '1.75rem',
@@ -977,26 +981,30 @@ const StudentDashboard = () => {
               gap: '0.75rem',
               flexWrap: 'wrap',
             }}
-          >
-            <button
-              className="student-dashboard-primary-btn"
-              onClick={() =>
-                alert(
-                  `Attendance: ${attendance.percentage}% (${attendance.present}/${attendance.totalClasses})`
-                )
-              }
-            >
-              View Attendance Detail
-            </button>
-            <button
-              className="student-dashboard-ghost-btn"
-              onClick={() => alert('Timetable feature coming soon!')}
-            >
-              View Timetable (demo)
-            </button>
-          </div>
+          ></div>
         </div>
       </div>
+
+      {/* Floating Chat Button Wrapper (forces visibility) */}
+      <div
+        style={{
+          position: 'fixed',
+          right: '22px',
+          bottom: '22px',
+          zIndex: 99999,
+          pointerEvents: 'auto',
+        }}
+      >
+        <ChatButton onClick={() => setShowChat(true)} />
+      </div>
+
+      {/* ChatBot */}
+      {showChat && (
+        <ChatBot
+          studentEmail={student?.email}
+          onClose={() => setShowChat(false)}
+        />
+      )}
     </div>
   );
 };
