@@ -10,7 +10,6 @@ const getApiBase = () => {
   }
   return 'https://irah.onrender.com'; // Production
 };
-
 const API_BASE = getApiBase();
 
 const TeacherDashboard = () => {
@@ -30,6 +29,11 @@ const TeacherDashboard = () => {
   const [error, setError] = useState('');
   const [saveMessage, setSaveMessage] = useState('');
 
+  // ✅ NEW: navigate to examinations
+  const handleOpenExaminations = () => {
+    navigate('/examinations', { state: { teacher } });
+  };
+
   // Fetch students assigned to this teacher
   useEffect(() => {
     const fetchStudents = async () => {
@@ -37,19 +41,24 @@ const TeacherDashboard = () => {
         setLoading(false);
         return;
       }
+
       try {
         setLoading(true);
         setError('');
+
         const res = await fetch(`${API_BASE}/api/admin/students-by-mentor`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ mentorTeacherEmail: teacher.email }),
         });
+
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
           throw new Error(data.message || 'Failed to fetch students');
         }
+
         setStudents(data.students || []);
+
         const initial = {};
         (data.students || []).forEach((s) => {
           initial[s.email] = 'present';
@@ -62,6 +71,7 @@ const TeacherDashboard = () => {
         setLoading(false);
       }
     };
+
     fetchStudents();
   }, [teacher?.email]);
 
@@ -91,7 +101,10 @@ const TeacherDashboard = () => {
   }
 
   const handleStatusChange = (studentEmail, status) => {
-    setAttendance((prev) => ({ ...prev, [studentEmail]: status }));
+    setAttendance((prev) => ({
+      ...prev,
+      [studentEmail]: status,
+    }));
   };
 
   const handleSaveAttendance = async () => {
@@ -114,6 +127,7 @@ const TeacherDashboard = () => {
 
     setSaving(true);
     setSaveMessage('');
+
     try {
       const records = students.map((s) => ({
         studentEmail: s.email,
@@ -138,7 +152,7 @@ const TeacherDashboard = () => {
       }
 
       setSaveMessage(
-        `Attendance saved for ${classDate}, Slot ${slot} - ${subject}. Records: ${data.count}`
+        `✅ Attendance saved for ${classDate}, Slot ${slot} - ${subject}. Records: ${data.count}`
       );
     } catch (err) {
       console.error('Save attendance error:', err);
@@ -155,9 +169,10 @@ const TeacherDashboard = () => {
           {/* Header */}
           <div className="student-dashboard-header">
             <div className="student-dashboard-title-block">
-              <h1>Welcome, {teacher.name} (IRAH Teacher)</h1>
+              <h1>Welcome, {teacher.name || 'IRAH Teacher'}</h1>
               <p>Department: {teacher.dept || 'N/A'}</p>
             </div>
+
             <div className="student-dashboard-actions">
               <button
                 className="student-dashboard-primary-btn"
@@ -165,6 +180,15 @@ const TeacherDashboard = () => {
               >
                 Back to Home
               </button>
+
+              {/* ✅ NEW: Examinations */}
+              <button
+                className="student-dashboard-primary-btn"
+                onClick={handleOpenExaminations}
+              >
+                Examinations
+              </button>
+
               <button
                 className="student-dashboard-ghost-btn"
                 onClick={() => navigate('/student-login')}
@@ -180,10 +204,12 @@ const TeacherDashboard = () => {
               <div className="student-info-label">Email</div>
               <div className="student-info-value">{teacher.email}</div>
             </div>
+
             <div className="student-info-card">
               <div className="student-info-label">Role</div>
               <div className="student-info-value">Mentor Faculty</div>
             </div>
+
             <div className="student-info-card">
               <div className="student-info-label">Assigned Students</div>
               <div className="student-info-value">
@@ -192,7 +218,7 @@ const TeacherDashboard = () => {
             </div>
           </div>
 
-          {/* Date / Slot / Subject / Save */}
+          {/* Date Slot Subject Save */}
           <div
             style={{
               marginTop: '1.5rem',
@@ -237,7 +263,7 @@ const TeacherDashboard = () => {
                   marginBottom: '0.25rem',
                 }}
               >
-                Slot (1–8)
+                Slot (1-8)
               </label>
               <select
                 value={slot}
@@ -286,28 +312,30 @@ const TeacherDashboard = () => {
               />
             </div>
 
-            <button
-              className="student-dashboard-primary-btn"
-              onClick={handleSaveAttendance}
-              disabled={saving || loading || students.length === 0}
-            >
-              {saving ? 'Saving...' : 'Save Attendance'}
-            </button>
-
-            {saveMessage && (
-              <span
-                style={{
-                  fontSize: '0.9rem',
-                  color: saveMessage.includes('saved') ? '#22c55e' : '#f97316',
-                }}
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <button
+                className="student-dashboard-primary-btn"
+                onClick={handleSaveAttendance}
+                disabled={saving || loading || students.length === 0}
               >
-                {saveMessage}
-              </span>
-            )}
+                {saving ? 'Saving...' : 'Save Attendance'}
+              </button>
+
+              {saveMessage ? (
+                <span
+                  style={{
+                    fontSize: '0.9rem',
+                    color: saveMessage.includes('saved') ? '#22c55e' : '#f97316',
+                  }}
+                >
+                  {saveMessage}
+                </span>
+              ) : null}
+            </div>
           </div>
 
           {/* Error */}
-          {error && (
+          {error ? (
             <div
               style={{
                 padding: '1rem',
@@ -320,38 +348,21 @@ const TeacherDashboard = () => {
             >
               {error}
             </div>
-          )}
+          ) : null}
 
           {/* Students list */}
           {loading ? (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: '2rem',
-                color: 'var(--text-muted)',
-              }}
-            >
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
               Loading your students...
             </div>
           ) : students.length === 0 ? (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: '2rem',
-                color: 'var(--text-muted)',
-              }}
-            >
-              No students assigned yet. Ensure students have your email in
-              mentorTeacherEmail.
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+              No students assigned yet. Ensure students have your email in mentorTeacherEmail.
             </div>
           ) : (
             <div
               className="student-list-container"
-              style={{
-                maxHeight: '400px',
-                overflowY: 'auto',
-                marginTop: '1rem',
-              }}
+              style={{ maxHeight: '400px', overflowY: 'auto', marginTop: '1rem' }}
             >
               {students.map((student) => (
                 <div
@@ -366,12 +377,7 @@ const TeacherDashboard = () => {
                   }}
                 >
                   <div style={{ flex: 1 }}>
-                    <div
-                      style={{
-                        fontWeight: 600,
-                        marginBottom: '0.25rem',
-                      }}
-                    >
+                    <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>
                       {student.name || 'Unnamed Student'}
                     </div>
                     <div
@@ -387,13 +393,8 @@ const TeacherDashboard = () => {
                       <span>{student.email}</span>
                     </div>
                   </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: '0.5rem',
-                      alignItems: 'center',
-                    }}
-                  >
+
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     <button
                       className="student-dashboard-primary-btn"
                       type="button"
@@ -404,29 +405,20 @@ const TeacherDashboard = () => {
                             ? 'linear-gradient(135deg, #22c55e, #4ade80)'
                             : undefined,
                       }}
-                      onClick={() =>
-                        handleStatusChange(student.email, 'present')
-                      }
+                      onClick={() => handleStatusChange(student.email, 'present')}
                     >
                       P
                     </button>
+
                     <button
                       className="student-dashboard-ghost-btn"
                       type="button"
                       style={{
                         padding: '0.4rem 0.8rem',
-                        borderColor:
-                          attendance[student.email] === 'absent'
-                            ? '#ef4444'
-                            : undefined,
-                        color:
-                          attendance[student.email] === 'absent'
-                            ? '#ef4444'
-                            : undefined,
+                        borderColor: attendance[student.email] === 'absent' ? '#ef4444' : undefined,
+                        color: attendance[student.email] === 'absent' ? '#ef4444' : undefined,
                       }}
-                      onClick={() =>
-                        handleStatusChange(student.email, 'absent')
-                      }
+                      onClick={() => handleStatusChange(student.email, 'absent')}
                     >
                       A
                     </button>

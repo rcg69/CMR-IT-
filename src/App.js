@@ -24,6 +24,7 @@ import StudentLogin from './backend/StudentLogin';
 import StudentDashboard from './backend/StudentDashboard';
 import AdminDashboard from './backend/AdminDashboard';
 import TeacherDashboard from './backend/TeacherDashboard';
+import Examinations from "./backend/Examinations";
 
 import ChatBot from './backend/ChatBot';
 import ChatButton from './backend/ChatButton';
@@ -72,6 +73,8 @@ const App = () => {
             <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
 
             <Route path="/student/chat" element={<ChatBot />} />
+           <Route path="/examinations" element={<Examinations />} />
+
 
             <Route path="/alumni" element={<Alumni />} />
             <Route path="/achievements" element={<Achievements />} />
