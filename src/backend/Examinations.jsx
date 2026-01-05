@@ -10,30 +10,23 @@ const getApiBase = () => {
 };
 const API_BASE = getApiBase();
 
-// ---- helper: always returns useful error messages ----
+// helper: better errors
 async function fetchJSON(url, options = {}) {
-  const res = await fetch(url, {
-    ...options,
-    // Browsers may require this for cookie-based setups; harmless otherwise.
-    credentials: "include",
-  });
-
+  const res = await fetch(url, { ...options, credentials: "include" });
   const text = await res.text();
+
   let data = {};
   try {
     data = text ? JSON.parse(text) : {};
   } catch {
-    data = { raw: text }; // backend might send HTML on error
+    data = { raw: text };
   }
 
   if (!res.ok) {
-    const msg =
-      data?.message ||
-      data?.error ||
-      `${res.status} ${res.statusText} (URL: ${url})`;
-    throw new Error(msg);
+    throw new Error(
+      data?.message || data?.error || `${res.status} ${res.statusText}`
+    );
   }
-
   return data;
 }
 
@@ -54,7 +47,7 @@ const Examinations = () => {
   const [statusMsg, setStatusMsg] = useState("");
   const [errMsg, setErrMsg] = useState("");
 
-  // Teacher state
+  // Teacher editor state (create/update/upload)
   const [tStudentRollNo, setTStudentRollNo] = useState("");
   const [tExamName, setTExamName] = useState("");
   const [folder, setFolder] = useState(null);
@@ -66,12 +59,65 @@ const Examinations = () => {
   const [selectedSubjectId, setSelectedSubjectId] = useState("");
   const [scriptFiles, setScriptFiles] = useState([]);
 
+  // Teacher hierarchy state (persisted list from DB)
+  const [tFolders, setTFolders] = useState([]);
+  const [tLoading, setTLoading] = useState(false);
+  const [tSelectedExam, setTSelectedExam] = useState("");
+  const [tSelectedRoll, setTSelectedRoll] = useState("");
+
   // Student state
   const [sFolders, setSFolders] = useState([]);
   const [sSelectedFolder, setSSelectedFolder] = useState(null);
   const [sLoading, setSLoading] = useState(false);
 
-  // Student: load folders
+  const goBack = () => {
+    if (teacher) navigate("/teacher-dashboard", { state: { teacher } });
+    else if (student) navigate("/student-dashboard", { state: { student } });
+    else navigate("/");
+  };
+
+  // -------------------------
+  // Teacher: fetch saved folders (mentor uploads only)
+  // -------------------------
+  const fetchTeacherFolders = async () => {
+    if (!teacher?.email) return;
+    setTLoading(true);
+    try {
+      const data = await fetchJSON(
+        `${API_BASE}/api/exams/teacher/folders?mentorTeacherEmail=${encodeURIComponent(
+          teacher.email
+        )}`
+      );
+      setTFolders(Array.isArray(data.folders) ? data.folders : []);
+    } catch (e) {
+      setErrMsg(e.message || "Failed to load teacher folders");
+    } finally {
+      setTLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (mode === "teacher") {
+      fetchTeacherFolders();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, teacher?.email]);
+
+  // Build hierarchy: examName -> rollNo -> folder
+  const teacherTree = useMemo(() => {
+    const tree = {};
+    (tFolders || []).forEach((f) => {
+      const exam = String(f.examName || "Unknown Exam");
+      const roll = String(f.studentRollNo || "Unknown Roll");
+      if (!tree[exam]) tree[exam] = {};
+      tree[exam][roll] = f;
+    });
+    return tree;
+  }, [tFolders]);
+
+  // -------------------------
+  // Student: load folders (by rollNo)
+  // -------------------------
   useEffect(() => {
     const loadStudentFolders = async () => {
       if (mode !== "student") return;
@@ -97,18 +143,15 @@ const Examinations = () => {
     loadStudentFolders();
   }, [mode, student?.rollNo]);
 
-  const goBack = () => {
-    if (teacher) navigate("/teacher-dashboard", { state: { teacher } });
-    else if (student) navigate("/student-dashboard", { state: { student } });
-    else navigate("/");
-  };
-
+  // -------------------------
   // Teacher actions
+  // -------------------------
   const handleCreateFolder = async () => {
     setErrMsg("");
     setStatusMsg("");
 
-    if (!tStudentRollNo.trim()) return setErrMsg("Please enter student roll number");
+    if (!tStudentRollNo.trim())
+      return setErrMsg("Please enter student roll number");
     if (!tExamName.trim()) return setErrMsg("Please enter examination name");
 
     try {
@@ -125,6 +168,9 @@ const Examinations = () => {
       setFolder(data.folder);
       setSelectedSubjectId("");
       setStatusMsg("Folder created/loaded successfully ✅");
+
+      // refresh hierarchy list so it persists
+      fetchTeacherFolders();
     } catch (e) {
       setErrMsg(e.message || "Failed to create folder");
     }
@@ -136,7 +182,8 @@ const Examinations = () => {
 
     if (!folder?._id) return setErrMsg("Create/select an exam folder first");
     if (!subjectName.trim()) return setErrMsg("Enter subject name");
-    if (marksObtained === "" || marksObtained === null) return setErrMsg("Enter marks obtained");
+    if (marksObtained === "" || marksObtained === null)
+      return setErrMsg("Enter marks obtained");
 
     try {
       const data = await fetchJSON(
@@ -157,6 +204,8 @@ const Examinations = () => {
       setMarksObtained("");
       setMaxMarks("100");
       setStatusMsg("Subject saved ✅");
+
+      fetchTeacherFolders();
     } catch (e) {
       setErrMsg(e.message || "Failed to save subject");
     }
@@ -168,26 +217,45 @@ const Examinations = () => {
 
     if (!folder?._id) return setErrMsg("Create/select an exam folder first");
     if (!selectedSubjectId) return setErrMsg("Select a subject to upload scripts");
-    if (!scriptFiles || scriptFiles.length === 0) return setErrMsg("Choose at least one script file");
+    if (!scriptFiles || scriptFiles.length === 0)
+      return setErrMsg("Choose at least one script file");
 
     try {
       const fd = new FormData();
       Array.from(scriptFiles).forEach((f) => fd.append("scripts", f));
 
-      const data = await fetchJSON(
+      await fetchJSON(
         `${API_BASE}/api/exams/teacher/${folder._id}/${selectedSubjectId}/upload-scripts`,
         { method: "POST", body: fd }
       );
 
-      // Optional: update folder locally so teacher immediately sees script count
-      // (Data returns { subject }, but folder is unchanged. Keep it simple.)
       setStatusMsg("Scripts uploaded ✅");
       setScriptFiles([]);
+
+      fetchTeacherFolders();
     } catch (e) {
       setErrMsg(e.message || "Failed to upload scripts");
     }
   };
 
+  // Teacher: click hierarchy to load into editor
+  const handleTeacherPickFolder = (examName, rollNo) => {
+    const f = teacherTree?.[examName]?.[rollNo] || null;
+    setFolder(f);
+
+    setTSelectedExam(examName);
+    setTSelectedRoll(rollNo);
+
+    // also preload top inputs for convenience
+    setTExamName(f?.examName || examName);
+    setTStudentRollNo(f?.studentRollNo || rollNo);
+
+    setSelectedSubjectId("");
+    setStatusMsg("Loaded saved folder ✅");
+    setErrMsg("");
+  };
+
+  // Student: open folder detail
   const handleStudentOpenFolder = async (folderId) => {
     setErrMsg("");
     setStatusMsg("");
@@ -291,9 +359,84 @@ const Examinations = () => {
             </div>
           ) : null}
 
-          {/* Teacher UI */}
+          {/* ---------------- TEACHER VIEW ---------------- */}
           {mode === "teacher" ? (
             <>
+              {/* Hierarchical view */}
+              <div className="student-info-card" style={{ marginTop: "0.5rem" }}>
+                <div className="student-info-label">
+                  Saved uploads (Exam → Roll No → Subjects → Marks)
+                </div>
+
+                {tLoading ? (
+                  <div style={{ marginTop: "0.75rem", color: "var(--text-muted)" }}>
+                    Loading...
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
+                      <select
+                        className="student-profile-input"
+                        value={tSelectedExam}
+                        onChange={(e) => {
+                          setTSelectedExam(e.target.value);
+                          setTSelectedRoll("");
+                          setFolder(null);
+                        }}
+                        style={{ minWidth: 220 }}
+                      >
+                        <option value="">Select exam...</option>
+                        {Object.keys(teacherTree).map((exam) => (
+                          <option key={exam} value={exam}>
+                            {exam}
+                          </option>
+                        ))}
+                      </select>
+
+                      <select
+                        className="student-profile-input"
+                        value={tSelectedRoll}
+                        onChange={(e) => {
+                          const roll = e.target.value;
+                          setTSelectedRoll(roll);
+                          if (tSelectedExam && roll) handleTeacherPickFolder(tSelectedExam, roll);
+                        }}
+                        disabled={!tSelectedExam}
+                        style={{ minWidth: 220 }}
+                      >
+                        <option value="">Select student roll no...</option>
+                        {tSelectedExam
+                          ? Object.keys(teacherTree[tSelectedExam] || {}).map((roll) => (
+                              <option key={roll} value={roll}>
+                                {roll}
+                              </option>
+                            ))
+                          : null}
+                      </select>
+
+                      <button
+                        className="student-dashboard-ghost-btn"
+                        type="button"
+                        onClick={fetchTeacherFolders}
+                      >
+                        Refresh
+                      </button>
+                    </div>
+
+                    {folder?.subjects?.length ? (
+                      <div style={{ marginTop: "0.75rem", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                        {folder.subjects.map((s) => (
+                          <div key={s._id} style={{ fontSize: "0.92rem", color: "var(--text-primary)" }}>
+                            {s.subjectName} — {s.marksObtained}/{s.maxMarks}
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+                  </>
+                )}
+              </div>
+
+              {/* Teacher editor (create/open folder) */}
               <div className="student-dashboard-grid" style={{ marginTop: "1rem" }}>
                 <div className="student-info-card">
                   <div className="student-info-label">Student Roll No</div>
@@ -315,10 +458,7 @@ const Examinations = () => {
                   />
                 </div>
 
-                <div
-                  className="student-info-card"
-                  style={{ display: "flex", alignItems: "flex-end" }}
-                >
+                <div className="student-info-card" style={{ display: "flex", alignItems: "flex-end" }}>
                   <button className="student-dashboard-primary-btn" onClick={handleCreateFolder}>
                     Create / Open Folder
                   </button>
@@ -334,6 +474,7 @@ const Examinations = () => {
                     </div>
                   </div>
 
+                  {/* Add / Update Subject */}
                   <div className="student-info-card" style={{ marginBottom: "1rem" }}>
                     <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
                       <div style={{ minWidth: 220 }}>
@@ -376,17 +517,11 @@ const Examinations = () => {
                     </div>
                   </div>
 
+                  {/* Subjects list + pick one for upload */}
                   <div className="student-info-card" style={{ marginBottom: "1rem" }}>
                     <div className="student-info-label">Subjects</div>
                     {Array.isArray(folder.subjects) && folder.subjects.length > 0 ? (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "0.5rem",
-                          marginTop: "0.5rem",
-                        }}
-                      >
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
                         {folder.subjects.map((s) => (
                           <button
                             key={s._id}
@@ -394,10 +529,7 @@ const Examinations = () => {
                             className="student-dashboard-ghost-btn"
                             style={{
                               textAlign: "left",
-                              borderColor:
-                                selectedSubjectId === s._id
-                                  ? "rgba(129, 178, 241, 0.9)"
-                                  : undefined,
+                              borderColor: selectedSubjectId === s._id ? "rgba(129, 178, 241, 0.9)" : undefined,
                             }}
                             onClick={() => setSelectedSubjectId(s._id)}
                           >
@@ -406,24 +538,15 @@ const Examinations = () => {
                         ))}
                       </div>
                     ) : (
-                      <div style={{ marginTop: "0.5rem", color: "var(--text-muted)" }}>
-                        No subjects yet.
-                      </div>
+                      <div style={{ marginTop: "0.5rem", color: "var(--text-muted)" }}>No subjects yet.</div>
                     )}
                   </div>
 
+                  {/* Upload scripts */}
                   <div className="student-info-card">
                     <div className="student-info-label">Upload Answer Scripts</div>
 
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "0.75rem",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                        marginTop: "0.5rem",
-                      }}
-                    >
+                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap", marginTop: "0.5rem" }}>
                       <input
                         type="file"
                         multiple
@@ -445,16 +568,9 @@ const Examinations = () => {
             </>
           ) : null}
 
-          {/* Student UI */}
+          {/* ---------------- STUDENT VIEW ---------------- */}
           {mode === "student" ? (
-            <div
-              style={{
-                marginTop: "1rem",
-                display: "grid",
-                gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1.5fr)",
-                gap: "1rem",
-              }}
-            >
+            <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1.5fr)", gap: "1rem" }}>
               <div className="student-info-card">
                 <div className="student-info-label">Your Exam Folders</div>
 
@@ -533,11 +649,7 @@ const Examinations = () => {
                                       href={sc.url}
                                       target="_blank"
                                       rel="noreferrer"
-                                      style={{
-                                        color: "var(--accent)",
-                                        textDecoration: "underline",
-                                        fontSize: "0.9rem",
-                                      }}
+                                      style={{ color: "var(--accent)", textDecoration: "underline", fontSize: "0.9rem" }}
                                     >
                                       {sc.originalName || `Script ${i + 1}`}
                                     </a>
