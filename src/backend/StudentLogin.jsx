@@ -15,6 +15,9 @@ const API_BASE = getApiBase();
 const StudentLogin = () => {
   const navigate = useNavigate();
 
+  // ✅ NEW: single toggle to choose which form is visible
+  const [activeRole, setActiveRole] = useState('student'); // 'student' | 'teacher' | 'admin'
+
   // student login state
   const [login, setLogin] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -31,6 +34,20 @@ const StudentLogin = () => {
   const [teacherLogin, setTeacherLogin] = useState({ email: '', password: '' });
   const [teacherError, setTeacherError] = useState('');
   const [teacherLoading, setTeacherLoading] = useState(false);
+
+  // ✅ NEW: keep your old booleans, but sync them to the selected role
+  const selectRole = (role) => {
+    setActiveRole(role);
+
+    // make only one form visible at a time (as you requested)
+    setShowAdmin(role === 'admin');
+    setShowTeacher(role === 'teacher');
+
+    // optional: clear messages when switching
+    setError('');
+    setAdminError('');
+    setTeacherError('');
+  };
 
   // student handlers
   const handleChange = (e) => {
@@ -68,7 +85,6 @@ const StudentLogin = () => {
       }
 
       const student = data;
-      // App now explicitly named IRAH in this flow
       console.log('IRAH: student login success', student);
       navigate('/student-dashboard', { state: { student, appName: 'IRAH' } });
     } catch (err) {
@@ -145,7 +161,6 @@ const StudentLogin = () => {
 
   return (
     <div className="student-login-page">
-      {/* keep your existing JSX structure, just header text updated */}
       <div className="login-container">
         <button className="back-btn" onClick={() => navigate('/')}>
           Back to Home
@@ -157,66 +172,97 @@ const StudentLogin = () => {
             <p>Students, Teachers &amp; Admin access</p>
           </div>
 
-          {/* Student login form */}
-          <form onSubmit={handleSubmit} className="login-form">
-            {error && <div className="error-message">{error}</div>}
-
-            <div className="form-group">
-              <label htmlFor="studentEmail">Student Email</label>
-              <input
-                id="studentEmail"
-                type="email"
-                name="email"
-                value={login.email}
-                onChange={handleChange}
-                placeholder="student@cmrit.ac.in"
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="studentPassword">Password</label>
-              <input
-                id="studentPassword"
-                type="password"
-                name="password"
-                value={login.password}
-                onChange={handleChange}
-                placeholder="Enter password"
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <button type="submit" className="login-btn" disabled={loading}>
-              {loading ? 'Signing in...' : 'Student Sign In'}
+          {/* ✅ NEW: Role toggle buttons */}
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+              justifyContent: 'center',
+              margin: '0.75rem 0 1rem',
+              flexWrap: 'wrap',
+            }}
+          >
+            <button
+              type="button"
+              className="login-btn"
+              style={{
+                width: 'auto',
+                padding: '0.55rem 0.9rem',
+                opacity: activeRole === 'student' ? 1 : 0.65,
+              }}
+              onClick={() => selectRole('student')}
+            >
+              Student
             </button>
-          </form>
 
-          {/* Toggle admin/teacher login */}
-          <div className="login-footer">
-            <p>Other logins</p>
-            <div>
-              <button
-                className="forgot-password"
-                type="button"
-                onClick={() => setShowAdmin((prev) => !prev)}
-              >
-                {showAdmin ? 'Hide Admin Login' : 'Admin Login'}
-              </button>
-              <button
-                className="forgot-password"
-                type="button"
-                onClick={() => setShowTeacher((prev) => !prev)}
-              >
-                {showTeacher ? 'Hide Teacher Login' : 'Teacher Login'}
-              </button>
-            </div>
+            <button
+              type="button"
+              className="login-btn"
+              style={{
+                width: 'auto',
+                padding: '0.55rem 0.9rem',
+                opacity: activeRole === 'teacher' ? 1 : 0.65,
+              }}
+              onClick={() => selectRole('teacher')}
+            >
+              Teacher
+            </button>
+
+            <button
+              type="button"
+              className="login-btn"
+              style={{
+                width: 'auto',
+                padding: '0.55rem 0.9rem',
+                opacity: activeRole === 'admin' ? 1 : 0.65,
+              }}
+              onClick={() => selectRole('admin')}
+            >
+              Admin
+            </button>
           </div>
 
-          {/* Admin login form */}
-          {showAdmin && (
+          {/* Student login form (visible only when student selected) */}
+          {activeRole === 'student' && (
+            <form onSubmit={handleSubmit} className="login-form">
+              {error && <div className="error-message">{error}</div>}
+
+              <div className="form-group">
+                <label htmlFor="studentEmail">Student Email</label>
+                <input
+                  id="studentEmail"
+                  type="email"
+                  name="email"
+                  value={login.email}
+                  onChange={handleChange}
+                  placeholder="student@cmrit.ac.in"
+                  required
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="studentPassword">Password</label>
+                <input
+                  id="studentPassword"
+                  type="password"
+                  name="password"
+                  value={login.password}
+                  onChange={handleChange}
+                  placeholder="Enter password"
+                  required
+                  disabled={loading}
+                />
+              </div>
+
+              <button type="submit" className="login-btn" disabled={loading}>
+                {loading ? 'Signing in...' : 'Student Sign In'}
+              </button>
+            </form>
+          )}
+
+          {/* Admin login form (visible only when admin selected) */}
+          {showAdmin && activeRole === 'admin' && (
             <form
               onSubmit={handleAdminSubmit}
               className="login-form"
@@ -226,9 +272,8 @@ const StudentLogin = () => {
                 paddingTop: '1.2rem',
               }}
             >
-              {adminError && (
-                <div className="error-message">{adminError}</div>
-              )}
+              {adminError && <div className="error-message">{adminError}</div>}
+
               <div className="form-group">
                 <label htmlFor="adminEmail">Admin Email</label>
                 <input
@@ -242,6 +287,7 @@ const StudentLogin = () => {
                   disabled={adminLoading}
                 />
               </div>
+
               <div className="form-group">
                 <label htmlFor="adminPassword">Admin Password</label>
                 <input
@@ -255,18 +301,15 @@ const StudentLogin = () => {
                   disabled={adminLoading}
                 />
               </div>
-              <button
-                type="submit"
-                className="login-btn"
-                disabled={adminLoading}
-              >
+
+              <button type="submit" className="login-btn" disabled={adminLoading}>
                 {adminLoading ? 'Verifying...' : 'Login as Admin'}
               </button>
             </form>
           )}
 
-          {/* Teacher login form */}
-          {showTeacher && (
+          {/* Teacher login form (visible only when teacher selected) */}
+          {showTeacher && activeRole === 'teacher' && (
             <form
               onSubmit={handleTeacherSubmit}
               className="login-form"
@@ -276,9 +319,8 @@ const StudentLogin = () => {
                 paddingTop: '1.2rem',
               }}
             >
-              {teacherError && (
-                <div className="error-message">{teacherError}</div>
-              )}
+              {teacherError && <div className="error-message">{teacherError}</div>}
+
               <div className="form-group">
                 <label htmlFor="teacherEmail">Teacher Email</label>
                 <input
@@ -292,6 +334,7 @@ const StudentLogin = () => {
                   disabled={teacherLoading}
                 />
               </div>
+
               <div className="form-group">
                 <label htmlFor="teacherPassword">Teacher Password</label>
                 <input
@@ -305,11 +348,8 @@ const StudentLogin = () => {
                   disabled={teacherLoading}
                 />
               </div>
-              <button
-                type="submit"
-                className="login-btn"
-                disabled={teacherLoading}
-              >
+
+              <button type="submit" className="login-btn" disabled={teacherLoading}>
                 {teacherLoading ? 'Verifying...' : 'Login as Teacher'}
               </button>
             </form>
