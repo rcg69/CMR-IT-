@@ -2,8 +2,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/StudentDashboard.css';
-import ChatButton from '../backend/ChatButton';
-import ChatBot from './ChatBot';
 
 // Universal API_BASE - Dev + Prod
 const getApiBase = () => {
@@ -68,9 +66,6 @@ const StudentDashboard = () => {
   // Toggle for showing/hiding profile section
   const [showProfileInfo, setShowProfileInfo] = useState(false);
 
-  // Chat
-  const [showChat, setShowChat] = useState(false);
-
   // SUMMARY - Fetch attendance summary
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -84,9 +79,7 @@ const StudentDashboard = () => {
         setAttError('');
 
         const res = await fetch(
-          `${API_BASE}/api/student/attendance-summary?email=${encodeURIComponent(
-            student.email
-          )}`
+          `${API_BASE}/api/student/attendance-summary?email=${encodeURIComponent(student.email)}`
         );
         const data = await res.json();
 
@@ -122,9 +115,7 @@ const StudentDashboard = () => {
         setRecError('');
 
         const res = await fetch(
-          `${API_BASE}/api/student/attendance-records?email=${encodeURIComponent(
-            student.email
-          )}`
+          `${API_BASE}/api/student/attendance-records?email=${encodeURIComponent(student.email)}`
         );
         const data = await res.json();
 
@@ -313,12 +304,10 @@ const StudentDashboard = () => {
   const calendarDays = useMemo(() => {
     const days = [];
 
-    // Empty cells for previous month
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
 
-    // Current month days
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(d).padStart(
         2,
@@ -377,10 +366,7 @@ const StudentDashboard = () => {
                 <p>Please login again to access your student dashboard.</p>
               </div>
               <div className="student-dashboard-actions">
-                <button
-                  className="student-dashboard-primary-btn"
-                  onClick={() => navigate('/student-login')}
-                >
+                <button className="student-dashboard-primary-btn" onClick={() => navigate('/student-login')}>
                   Go to Student Login
                 </button>
               </div>
@@ -421,7 +407,6 @@ const StudentDashboard = () => {
                 Back to Home
               </button>
 
-              {/* ✅ NEW: Examinations */}
               <button className="student-dashboard-primary-btn" onClick={handleOpenExaminations}>
                 Examinations
               </button>
@@ -431,8 +416,6 @@ const StudentDashboard = () => {
               </button>
             </div>
           </div>
-
-          {/* --- Everything below remains same in your file (profile, calendar, chat) --- */}
 
           {/* Toggle profile info */}
           <div style={{ marginTop: '1rem', marginBottom: '0.75rem' }}>
@@ -840,8 +823,7 @@ const StudentDashboard = () => {
                     const status = info?.status || 'no-record';
                     const subject = info?.subject;
 
-                    const label =
-                      status === 'present' ? 'Present' : status === 'absent' ? 'Absent' : 'No class';
+                    const label = status === 'present' ? 'Present' : status === 'absent' ? 'Absent' : 'No class';
 
                     const bg =
                       status === 'present'
@@ -892,15 +874,6 @@ const StudentDashboard = () => {
               </div>
             ) : null}
           </div>
-
-          {/* Floating Chat Button Wrapper */}
-          <div style={{ position: 'fixed', right: '22px', bottom: '22px', zIndex: 99999, pointerEvents: 'auto' }}>
-            <ChatButton onClick={() => setShowChat(true)} />
-          </div>
-
-          {showChat ? (
-            <ChatBot studentEmail={student?.email} onClose={() => setShowChat(false)} />
-          ) : null}
         </div>
       </div>
     </div>
