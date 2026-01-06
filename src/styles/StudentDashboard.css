@@ -1,12 +1,22 @@
 /* src/styles/StudentDashboard.css */
 
 .student-dashboard-page {
+  /* Mobile-safe viewport sizing */
   min-height: 100vh;
+  min-height: 100dvh; /* fixes mobile address-bar 100vh issues */ /* [web:101] */
+
   background: radial-gradient(circle at top left, #111425 0%, #02010a 50%, #000000 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1rem;
+
+  /* Safer padding for notches/home-bar */
+  padding:
+    2rem
+    max(1rem, env(safe-area-inset-right))
+    calc(2rem + env(safe-area-inset-bottom))
+    max(1rem, env(safe-area-inset-left)); /* [web:91] */
+
   font-family: var(--font-sans);
   color: var(--text-primary);
 }
@@ -14,6 +24,9 @@
 .student-dashboard-container {
   width: 100%;
   max-width: 1200px;
+
+  /* Space so fixed chat button won't overlap bottom content */
+  padding-bottom: calc(72px + env(safe-area-inset-bottom)); /* [web:91] */
 }
 
 .student-dashboard-card {
@@ -140,7 +153,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
-  word-break: break-all;
+  word-break: break-word; /* mobile-friendly (avoids breaking every character) */
 }
 
 /* Action buttons section */
@@ -157,23 +170,34 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .student-dashboard-page {
-    padding: 1.5rem 1rem;
+    padding:
+      1.25rem
+      max(1rem, env(safe-area-inset-right))
+      calc(1.25rem + env(safe-area-inset-bottom))
+      max(1rem, env(safe-area-inset-left)); /* [web:91] */
   }
 
   .student-dashboard-card {
-    padding: 2rem 1.5rem;
+    padding: 1.25rem;
   }
 
   .student-dashboard-header {
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
     align-items: stretch;
   }
 
+  /* On mobile, row-wrapping buttons often looks broken. Keep them stacked. */
   .student-dashboard-actions {
-    flex-direction: row;
-    justify-content: flex-end;
-    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    min-width: unset;
+  }
+
+  .student-dashboard-primary-btn,
+  .student-dashboard-ghost-btn {
+    width: 100%;
   }
 
   .student-dashboard-grid {
@@ -188,7 +212,7 @@
 
 @media (max-width: 480px) {
   .student-dashboard-card {
-    padding: 1.75rem 1.25rem;
+    padding: 1.1rem;
   }
 
   .student-dashboard-header {
@@ -227,6 +251,7 @@
   color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
+
 /* wrapper for profile card */
 .student-profile-card {
   border-radius: var(--radius-lg);
@@ -373,10 +398,12 @@
   font-size: 0.8rem;
   color: #f97316;
 }
+
 /* ChatButton.css or global CSS */
 .chat-button {
   position: fixed;
-  bottom: 20px;
-  right: 24px;
   z-index: 9999;
+
+  right: max(24px, env(safe-area-inset-right));
+  bottom: calc(20px + env(safe-area-inset-bottom)); /* keeps it above home bar */ /* [web:91] */
 }
