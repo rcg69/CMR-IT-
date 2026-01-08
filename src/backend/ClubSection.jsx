@@ -31,6 +31,21 @@ const ClubSection = () => {
       return;
     }
     loadClubData();
+
+    // Auto-poll every 3 seconds to sync messages in real-time
+    const pollInterval = setInterval(() => {
+      fetch(`${API_BASE}/api/clubs/${clubId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.club) {
+            setMessages(data.messages || []);
+            setPendingRequests(data.club?.pendingRequests || []);
+          }
+        })
+        .catch(err => console.error('Polling error:', err));
+    }, 3000);
+
+    return () => clearInterval(pollInterval);
     // eslint-disable-next-line
   }, [clubId]);
 
@@ -75,7 +90,6 @@ const ClubSection = () => {
     });
 
     setNewMessage('');
-    alert('Message sent');
   };
 
   const approveMember = async (email) => {
@@ -88,8 +102,6 @@ const ClubSection = () => {
         presidentEmail: student.email
       })
     });
-
-    alert('Member approved');
   };
 
   const requestJoin = async () => {
@@ -100,8 +112,6 @@ const ClubSection = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ clubId, studentEmail: student.email, studentName: student.name })
     });
-
-    alert('Join request sent');
   };
 
   if (loading) return (

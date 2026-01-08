@@ -74,10 +74,8 @@ const Club = () => {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.message || 'Failed to send request');
       }
-
-      alert('Join request sent');
     } catch (err) {
-      alert(err.message || 'Unable to send join request');
+      console.error(err.message);
     }
   };
 
