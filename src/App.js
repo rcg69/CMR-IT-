@@ -16,6 +16,7 @@ import Student from './components/Student';
 import Alumni from './components/Alumni';
 import Achievements from './components/Achievements';
 import Certification from './components/Certification';
+import CreateClub from './components/CreateClub';
 
 import Brochure from './backend/brochure';
 import Updates from './backend/updates';
@@ -73,6 +74,7 @@ const App = () => {
             <Route path="/departments" element={<Departments />} />
             <Route path="/rd" element={<RD />} />
             <Route path="/student" element={<Student />} />
+            <Route path="/create-club" element={<CreateClub />} />
 
             {/* Auth & Dashboards */}
             <Route path="/student-login" element={<StudentLogin />} />

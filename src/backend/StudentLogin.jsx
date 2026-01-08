@@ -86,6 +86,8 @@ const StudentLogin = () => {
 
       const student = data;
       console.log('IRAH: student login success', student);
+      // persist student so other pages (clubs, deep links) can recover the logged-in user
+      try { localStorage.setItem('student', JSON.stringify(student)); } catch (e) { /* ignore */ }
       navigate('/student-dashboard', { state: { student, appName: 'IRAH' } });
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
