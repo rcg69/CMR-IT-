@@ -75,7 +75,7 @@ const ClubSection = () => {
     });
 
     setNewMessage('');
-    loadClubData();
+    alert('Message sent');
   };
 
   const approveMember = async (email) => {
@@ -89,7 +89,7 @@ const ClubSection = () => {
       })
     });
 
-    loadClubData();
+    alert('Member approved');
   };
 
   const requestJoin = async () => {
@@ -102,7 +102,6 @@ const ClubSection = () => {
     });
 
     alert('Join request sent');
-    loadClubData();
   };
 
   if (loading) return (

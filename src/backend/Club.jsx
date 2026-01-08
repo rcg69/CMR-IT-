@@ -76,7 +76,6 @@ const Club = () => {
       }
 
       alert('Join request sent');
-      fetchClubs(viewAll);
     } catch (err) {
       alert(err.message || 'Unable to send join request');
     }
