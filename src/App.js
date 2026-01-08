@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'; // ✅ useLocation
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
@@ -20,18 +20,24 @@ import Certification from './components/Certification';
 import Brochure from './backend/brochure';
 import Updates from './backend/updates';
 import Admissions from './backend/admissions';
+
 import StudentLogin from './backend/StudentLogin';
 import StudentDashboard from './backend/StudentDashboard';
 import AdminDashboard from './backend/AdminDashboard';
 import TeacherDashboard from './backend/TeacherDashboard';
-import Examinations from "./backend/Examinations";
+import Examinations from './backend/Examinations';
 
 import ChatBot from './backend/ChatBot';
 import ChatButton from './backend/ChatButton';
 
+// ✅ NEW IMPORTS (Clubs)
+import Clubs from './backend/Club';
+import ClubSection from './backend/ClubSection';
+
 import './styles/global.css';
 import './styles/layout.css';
 
+/* Floating Chat Button */
 const FloatingChatButton = () => {
   const location = useLocation();
 
@@ -58,6 +64,7 @@ const App = () => {
 
         <main className="main-content">
           <Routes>
+            {/* Public Pages */}
             <Route path="/" element={<Home />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/approvals" element={<Approvals />} />
@@ -67,15 +74,21 @@ const App = () => {
             <Route path="/rd" element={<RD />} />
             <Route path="/student" element={<Student />} />
 
+            {/* Auth & Dashboards */}
             <Route path="/student-login" element={<StudentLogin />} />
             <Route path="/student-dashboard" element={<StudentDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
 
+            {/* Student Features */}
             <Route path="/student/chat" element={<ChatBot />} />
-           <Route path="/examinations" element={<Examinations />} />
+            <Route path="/examinations" element={<Examinations />} />
 
+            {/* ✅ Clubs Routes */}
+            <Route path="/clubs" element={<Clubs />} />
+            <Route path="/clubs/:clubId" element={<ClubSection />} />
 
+            {/* Other Pages */}
             <Route path="/alumni" element={<Alumni />} />
             <Route path="/achievements" element={<Achievements />} />
             <Route path="/certification" element={<Certification />} />
@@ -87,7 +100,7 @@ const App = () => {
 
         <Footer />
 
-        {/* ✅ Only shows on student/teacher/admin dashboards */}
+        {/* Floating Chat Button */}
         <FloatingChatButton />
       </BrowserRouter>
     </div>

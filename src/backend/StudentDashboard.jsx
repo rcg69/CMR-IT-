@@ -22,6 +22,11 @@ const StudentDashboard = () => {
     navigate('/examinations', { state: { student } });
   };
 
+  // ✅ NEW: navigate to clubs (ADDED)
+  const handleOpenClubs = () => {
+    navigate('/clubs', { state: { student } });
+  };
+
   // Attendance summary state
   const [attendance, setAttendance] = useState({
     totalClasses: 0,
@@ -409,6 +414,19 @@ const StudentDashboard = () => {
 
               <button className="student-dashboard-primary-btn" onClick={handleOpenExaminations}>
                 Examinations
+              </button>
+
+              {/* ✅ NEW CLUBS BUTTON - Added under Examinations */}
+              <button 
+                className="student-dashboard-primary-btn" 
+                onClick={handleOpenClubs}
+                style={{
+                  background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+                  marginTop: '0.5rem',
+                  border: 'none'
+                }}
+              >
+                🎭 Clubs
               </button>
 
               <button className="student-dashboard-ghost-btn" onClick={() => navigate('/student-login')}>
