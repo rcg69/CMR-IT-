@@ -139,7 +139,8 @@ const ClubSection = () => {
             </div>
 
             <div style={{ marginLeft: 'auto' }}>
-              {isMember && <span style={{ color: 'var(--text-muted)' }}>You are a member</span>}
+              {isPresident && <span style={{ color: '#10b981', fontWeight: 600 }}>👑 President</span>}
+              {isMember && !isPresident && <span style={{ color: 'var(--text-muted)' }}>Member</span>}
               {!isMember && !isPresident && (
                 <button onClick={requestJoin} className="student-dashboard-primary-btn" style={{ marginLeft: '0.75rem', background: '#f59e0b' }}>
                   Request to Join
@@ -171,46 +172,68 @@ const ClubSection = () => {
               </div>
             </div>
 
-            {/* Discussions */}
+            {/* Discussions - WhatsApp Style */}
             <div className="student-info-card" style={{ gridColumn: '1/-1' }}>
               <div className="student-info-label">💬 Discussions</div>
-              <div className="student-info-value">
-                <form onSubmit={postMessage} style={{ marginBottom: '1.5rem' }}>
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <input
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder="Type message..."
-                      style={{
-                        flex: 1, padding: '0.75rem', borderRadius: '8px',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        background: 'rgba(255,255,255,0.05)',
-                        color: 'var(--text-primary)'
-                      }}
-                    />
-                    <button 
-                      type="submit" 
-                      className="student-dashboard-primary-btn"
-                      style={{ padding: '0.75rem 1.5rem' }}
-                    >
-                      Post
-                    </button>
-                  </div>
-                </form>
-
-                <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                  {messages.map(msg => (
-                    <div key={msg._id} style={{
-                      padding: '0.75rem', 
-                      background: 'rgba(59,130,246,0.05)',
-                      borderRadius: '8px',
-                      marginBottom: '0.5rem',
-                      borderLeft: '3px solid #3b82f6'
-                    }}>
-                      <strong style={{ color: '#3b82f6' }}>{msg.senderName}</strong>: {msg.text}
-                    </div>
-                  ))}
+              <div className="student-info-value" style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ 
+                  maxHeight: '400px', 
+                  overflowY: 'auto', 
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem'
+                }}>
+                  {messages.length === 0 ? (
+                    <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 0' }}>No messages yet</p>
+                  ) : (
+                    messages.map(msg => (
+                      <div key={msg._id} style={{
+                        display: 'flex',
+                        flexDirection: student.email === msg.senderEmail ? 'row-reverse' : 'row',
+                        marginBottom: '0.5rem'
+                      }}>
+                        <div style={{
+                          maxWidth: '70%',
+                          padding: '0.75rem 1rem',
+                          borderRadius: '12px',
+                          background: student.email === msg.senderEmail ? '#3b82f6' : 'rgba(59,130,246,0.1)',
+                          border: student.email === msg.senderEmail ? 'none' : '1px solid rgba(59,130,246,0.3)',
+                          color: student.email === msg.senderEmail ? '#fff' : 'var(--text-primary)',
+                          wordWrap: 'break-word'
+                        }}>
+                          <div style={{ fontSize: '0.75rem', opacity: 0.7, marginBottom: '0.25rem' }}>
+                            {msg.senderName}
+                          </div>
+                          <div style={{ fontSize: '0.95rem' }}>
+                            {msg.text}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
+
+                <form onSubmit={postMessage} style={{ display: 'flex', gap: '0.75rem' }}>
+                  <input
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Type message..."
+                    style={{
+                      flex: 1, padding: '0.75rem', borderRadius: '8px',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: 'var(--text-primary)'
+                    }}
+                  />
+                  <button 
+                    type="submit" 
+                    className="student-dashboard-primary-btn"
+                    style={{ padding: '0.75rem 1.5rem' }}
+                  >
+                    Send
+                  </button>
+                </form>
               </div>
             </div>
 

@@ -15,6 +15,7 @@ const CreateClub = () => {
 
   const [clubName, setClubName] = useState('');
   const [description, setDescription] = useState('');
+  const [secretKey, setSecretKey] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Safety check
@@ -25,8 +26,13 @@ const CreateClub = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!clubName.trim() || !description.trim()) {
+    if (!clubName.trim() || !description.trim() || !secretKey.trim()) {
       alert('All fields required');
+      return;
+    }
+
+    if (secretKey !== 'club@123') {
+      alert('Invalid secret key');
       return;
     }
 
@@ -108,6 +114,26 @@ const CreateClub = () => {
                     fontSize: '0.95rem',
                     resize: 'vertical',
                     fontFamily: 'inherit'
+                  }}
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            <div className="student-info-card">
+              <div className="student-info-label">Secret Key</div>
+              <div className="student-info-value">
+                <input
+                  type="password"
+                  placeholder="Enter secret key"
+                  value={secretKey}
+                  onChange={(e) => setSecretKey(e.target.value)}
+                  style={{
+                    width: '100%', padding: '0.875rem', borderRadius: '8px',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: 'var(--text-primary)',
+                    fontSize: '1rem'
                   }}
                   disabled={loading}
                 />
