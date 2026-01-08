@@ -1,8 +1,109 @@
-// Same imports, change to StudentDashboard.css
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import '../styles/StudentDashboard.css';
 
+const getApiBase = () => {
+  if (import.meta.env.DEV) return 'http://localhost:5000';
+  return 'https://irah.onrender.com';
+};
+const API_BASE = getApiBase();
+
 const ClubSection = () => {
-  // ... keep all your existing logic exactly the same ...
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { clubId } = useParams();
+
+  // student may come from navigation state or localStorage
+  const storedStudent = (() => { try { return JSON.parse(localStorage.getItem('student')); } catch (e) { return null; } })();
+  const student = location.state?.student || storedStudent;
+
+  const [club, setClub] = useState(null);
+  const [meetings, setMeetings] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [isPresident, setIsPresident] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!student?.email || !clubId) {
+      navigate('/student-login');
+      return;
+    }
+    loadClubData();
+    // eslint-disable-next-line
+  }, [clubId]);
+
+  const loadClubData = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetch(`${API_BASE}/api/clubs/${clubId}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to load club');
+      }
+
+      setClub(data.club);
+      setMeetings(data.meetings || []);
+      setMessages(data.messages || []);
+      setPendingRequests(data.club?.pendingRequests || []);
+      setIsPresident(data.club?.presidentEmail === student.email);
+
+    } catch (err) {
+      console.error(err);
+      navigate('/clubs');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const postMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    await fetch(`${API_BASE}/api/clubs/post-message`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clubId,
+        senderEmail: student.email,
+        senderName: student.name,
+        text: newMessage
+      })
+    });
+
+    setNewMessage('');
+    loadClubData();
+  };
+
+  const approveMember = async (email) => {
+    await fetch(`${API_BASE}/api/clubs/approve-member`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clubId,
+        studentEmail: email,
+        presidentEmail: student.email
+      })
+    });
+
+    loadClubData();
+  };
+
+  const requestJoin = async () => {
+    if (!student?.email) return navigate('/student-login');
+
+    await fetch(`${API_BASE}/api/clubs/request-join`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clubId, studentEmail: student.email, studentName: student.name })
+    });
+
+    alert('Join request sent');
+    loadClubData();
+  };
 
   if (loading) return (
     <div className="student-dashboard-page">
@@ -16,6 +117,8 @@ const ClubSection = () => {
 
   if (!club) return null;
 
+  const isMember = club.members?.some(m => m === student.email);
+
   return (
     <div className="student-dashboard-page">
       <div className="student-dashboard-container">
@@ -24,6 +127,15 @@ const ClubSection = () => {
             <div className="student-dashboard-title-block">
               <h1>{club.name}</h1>
               <p>{club.description}</p>
+            </div>
+
+            <div style={{ marginLeft: 'auto' }}>
+              {isMember && <span style={{ color: 'var(--text-muted)' }}>You are a member</span>}
+              {!isMember && !isPresident && (
+                <button onClick={requestJoin} className="student-dashboard-primary-btn" style={{ marginLeft: '0.75rem', background: '#f59e0b' }}>
+                  Request to Join
+                </button>
+              )}
             </div>
           </div>
 
